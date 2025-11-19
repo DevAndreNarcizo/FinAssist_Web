@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Transaction, Investment, ChatMessage, SpendingAnalysis, Language, Goal, Achievement, MarketNews, User } from './types';
 import ChatInterface from './components/ChatInterface';
 import Dashboard from './components/Dashboard';
-import { LogoIcon } from './components/shared/Icon';
+import { LogoIcon, LayoutDashboardIcon } from './components/shared/Icon';
 import { translations } from './translations';
 import SettingsModal from './components/SettingsModal';
 import { formatCurrency } from './utils/formatters';
@@ -21,6 +21,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout, supabase }) => {
     const [investments, setInvestments] = useState<Investment[]>([]);
     const [language, setLanguage] = useState<Language>('pt');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isDashboardOpen, setIsDashboardOpen] = useState(false);
     const [goals, setGoals] = useState<Goal[]>([]);
     const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [activeCategoryFilter, setActiveCategoryFilter] = useState<string | null>(null);
@@ -194,19 +195,41 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout, supabase }) => {
 
     return (
         <>
-            <div className="flex h-screen w-screen flex-col lg:flex-row bg-gray-900 font-sans">
-                <header className="flex-shrink-0 lg:hidden p-4 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700 flex items-center justify-between">
+            <div className="flex h-screen w-screen flex-col lg:flex-row bg-gray-900 font-sans overflow-hidden">
+                <header className="flex-shrink-0 lg:hidden p-4 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700 flex items-center justify-between z-40">
                     <div className="flex items-center gap-2">
                         <LogoIcon className="w-8 h-8 text-cyan-400" />
                         <h1 className="text-xl font-bold text-white">FinAssist</h1>
                     </div>
+                    <button onClick={() => setIsDashboardOpen(!isDashboardOpen)} className="text-white">
+                        <LayoutDashboardIcon className="w-6 h-6" />
+                    </button>
                 </header>
-                <aside className="w-full lg:w-1/3 xl:w-1/4 flex-shrink-0 bg-gray-800/50 p-4 lg:p-6 overflow-y-auto">
+
+                {/* Overlay for mobile */}
+                {isDashboardOpen && (
+                    <div 
+                        className="lg:hidden fixed inset-0 bg-black/50 z-20" 
+                        onClick={() => setIsDashboardOpen(false)}
+                    ></div>
+                )}
+
+                <aside className={`
+                    absolute lg:static top-0 left-0 h-full
+                    w-4/5 max-w-sm lg:w-1/3 xl:w-1/4 
+                    bg-gray-800/95 lg:bg-gray-800/50 backdrop-blur-md
+                    p-4 lg:p-6 overflow-y-auto z-30
+                    transition-transform duration-300 ease-in-out
+                    ${isDashboardOpen ? 'translate-x-0' : '-translate-x-full'}
+                    lg:translate-x-0
+                `}>
                     <Dashboard netWorth={netWorth} spendingAnalysis={spendingAnalysis} investments={investments} transactions={transactions} goals={goals} addGoal={addGoal} removeGoal={removeGoal} language={language} activeCategoryFilter={activeCategoryFilter} setActiveCategoryFilter={setActiveCategoryFilter} marketNews={marketNews} isFetchingNews={isFetchingNews} />
                 </aside>
+                
                 <main className="flex-1 flex flex-col bg-gray-900">
                     <ChatInterface chatHistory={chatHistory} setChatHistory={setChatHistory} isThinking={isThinking} setIsThinking={setIsThinking} localApi={localApi} transactions={transactions} investments={investments} language={language} openSettings={() => setIsSettingsOpen(true)} />
                 </main>
+                
                 <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} language={language} setLanguage={setLanguage} onLogout={onLogout} />
             </div>
             <div className="absolute bottom-4 right-4 z-50">

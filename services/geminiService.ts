@@ -3,21 +3,42 @@ import { translations } from '../translations';
 
 // Helper function to call our secure Netlify function
 const callGeminiFunction = async (action: string, payload: any) => {
-    const response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action, payload }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-    if (!response.ok) {
-        const errorBody = await response.json();
-        console.error("Error from Netlify function:", errorBody);
-        throw new Error(`Function call failed with status: ${response.status}`);
+    try {
+        const response = await fetch('/api/gemini', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action, payload }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                const errorBody = await response.json();
+                console.error("Error from Netlify function:", errorBody);
+                throw new Error(errorBody.error || `Function call failed with status: ${response.status}`);
+            } else {
+                const text = await response.text();
+                console.error("Non-JSON error response:", text.substring(0, 200));
+                throw new Error(`Server error (${response.status}). Is the backend running?`);
+            }
+        }
+        
+        return response.json();
+    } catch (error: any) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error("Request timed out. Please check your internet connection or backend server.");
+        }
+        throw error;
     }
-    
-    return response.json();
 };
 
 

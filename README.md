@@ -94,4 +94,5 @@ O projeto foi desenvolvido utilizando uma stack moderna e robusta:
 ├── types.ts             # Definições de tipos TypeScript
 ├── translations.ts      # Arquivos de tradução
 └── App.tsx              # Ponto de entrada e roteamento
+<<<<<<< HEAD
 ## 🚀🚀

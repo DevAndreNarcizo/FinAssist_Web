@@ -1,0 +1,16 @@
+# Configuração de build para o Netlify
+[build]
+  # Comando para construir o site
+  command = "npm run build"
+  
+  # Diretório que contém o site construído (Vite gera na pasta 'dist')
+  publish = "dist"
+  
+  # Diretório onde as Netlify Functions estão localizadas
+  functions = "netlify/functions"
+
+# Redirecionamento para garantir que o roteamento do React (SPA) funcione corretamente
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

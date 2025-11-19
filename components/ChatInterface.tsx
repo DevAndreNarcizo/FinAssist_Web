@@ -104,9 +104,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         )}
       </div>
       <div className="mt-4 border-t border-gray-700 pt-4">
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-3 px-4">
+        <div className="flex items-center gap-2 mb-3 px-4 overflow-x-auto no-scrollbar pb-1 mask-linear-fade">
             {SUGGESTED_PROMPTS[language].map(prompt => (
-                <button key={prompt} onClick={() => handleSendMessage(prompt)} className="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-full transition-colors">
+                <button key={prompt} onClick={() => handleSendMessage(prompt)} className="flex-shrink-0 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-full transition-colors whitespace-nowrap border border-gray-700/50">
                     {prompt}
                 </button>
             ))}
@@ -117,7 +117,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             placeholder={translations.askAnything[language]}
-            className="w-full bg-gray-800 border border-gray-700 rounded-full py-3 pl-5 pr-28 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full bg-gray-800 border border-gray-700 rounded-full py-3 pl-4 pr-24 md:pl-5 md:pr-28 text-sm md:text-base text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={isThinking}
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">

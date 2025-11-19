@@ -195,7 +195,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout, supabase }) => {
 
     return (
         <>
-            <div className="flex h-screen w-screen flex-col lg:flex-row bg-gray-900 font-sans overflow-hidden">
+            <div className="flex h-[100dvh] w-screen flex-col lg:flex-row bg-gray-900 font-sans overflow-hidden">
                 <header className="flex-shrink-0 lg:hidden p-4 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700 flex items-center justify-between z-40">
                     <div className="flex items-center gap-2">
                         <LogoIcon className="w-8 h-8 text-cyan-400" />
@@ -232,9 +232,9 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout, supabase }) => {
                 
                 <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} language={language} setLanguage={setLanguage} onLogout={onLogout} />
             </div>
-            <div className="absolute bottom-4 right-4 z-50">
+            <div className="absolute top-20 left-4 right-4 md:left-auto md:right-4 md:top-auto md:bottom-4 z-50 flex flex-col items-center md:items-end pointer-events-none">
                 {achievements.map((ach, index) => (
-                    <AchievementsToast key={ach.id} achievement={ach} onClose={() => removeAchievement(ach.id)} language={language} style={{ marginBottom: `${index * 5}px`, zIndex: 100 - index }} />
+                    <AchievementsToast key={ach.id} achievement={ach} onClose={() => removeAchievement(ach.id)} language={language} style={{ marginBottom: '8px', pointerEvents: 'auto' }} />
                 ))}
             </div>
         </>

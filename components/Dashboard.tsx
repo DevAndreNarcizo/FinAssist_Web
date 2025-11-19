@@ -47,7 +47,7 @@ const AddGoalForm: React.FC<{ addGoal: (category: any, amount: number) => void; 
     const categories: Transaction['category'][] = ['Housing', 'Food', 'Transport', 'Entertainment', 'Health', 'Other'];
 
     return (
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-2 p-2 bg-gray-900/50 rounded-lg">
+        <form onSubmit={handleSubmit} className="flex flex-wrap sm:flex-nowrap items-center gap-2 mt-2 p-2 bg-gray-900/50 rounded-lg">
             <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as Transaction['category'])}

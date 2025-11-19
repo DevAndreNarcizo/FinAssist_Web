@@ -72,10 +72,10 @@ const AnnualOverviewChart: React.FC<AnnualOverviewChartProps> = ({ transactions,
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 5, right: 10, left: -25, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" strokeOpacity={0.5} />
-        <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="#9CA3AF" interval={0} />
-        <YAxis tick={{ fontSize: 10 }} stroke="#9CA3AF" tickFormatter={(value) => new Intl.NumberFormat(language, { notation: 'compact', compactDisplay: 'short' }).format(Number(value)) } />
+      <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" strokeOpacity={0.5} vertical={false} />
+        <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} stroke="#4B5563" interval="preserveStartEnd" tickMargin={5} />
+        <YAxis tick={{ fontSize: 10, fill: '#9CA3AF' }} stroke="#4B5563" tickFormatter={(value) => new Intl.NumberFormat(language, { notation: 'compact', compactDisplay: 'short' }).format(Number(value)) } width={35} />
         <Tooltip content={<CustomTooltip language={language} />} cursor={{fill: 'rgba(107, 114, 128, 0.1)'}} />
         <Legend wrapperStyle={{fontSize: '12px'}}/>
         <Bar dataKey={translations.income[language]} fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={30} />

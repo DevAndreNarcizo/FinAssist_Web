@@ -31,6 +31,12 @@ export const translations: Record<string, Record<Language, string>> = {
     es: 'unidades',
     ja: 'ユニット'
   },
+  noInvestments: {
+    en: 'No investments added yet.',
+    pt: 'Nenhum investimento adicionado ainda.',
+    es: 'No hay inversiones añadidas todavía.',
+    ja: 'まだ投資は追加されていません。'
+  },
   noSpendingData: {
     en: 'No spending data available.',
     pt: 'Nenhum dado de gasto disponível.',

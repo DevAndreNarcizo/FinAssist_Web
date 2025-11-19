@@ -3,7 +3,7 @@ import { translations } from '../translations';
 
 // Helper function to call our secure Netlify function
 const callGeminiFunction = async (action: string, payload: any) => {
-    const response = await fetch('/.netlify/functions/gemini', {
+    const response = await fetch('/api/gemini', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

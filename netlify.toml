@@ -9,6 +9,12 @@
   # Diretório onde as Netlify Functions estão localizadas
   functions = "netlify/functions"
 
+# Redirecionamento para a nossa API (Netlify Functions)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
 # Redirecionamento para garantir que o roteamento do React (SPA) funcione corretamente
 [[redirects]]
   from = "/*"

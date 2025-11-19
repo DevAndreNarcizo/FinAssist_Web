@@ -1,9 +1,5 @@
 # FinAssist - Seu Assistente Financeiro com IA
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" alt="FinAssist Banner" width="100%" />
-</div>
-
 ## 📋 Sobre o Projeto
 
 O **FinAssist** é uma aplicação web de gestão financeira inteligente que combina um dashboard interativo com um assistente de chat alimentado por Inteligência Artificial (Google Gemini). O objetivo é simplificar o rastreamento de despesas, receitas e investimentos através de linguagem natural, permitindo que o usuário converse com seus dados financeiros.

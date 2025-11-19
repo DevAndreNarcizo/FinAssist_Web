@@ -104,7 +104,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         )}
       </div>
       <div className="mt-4 border-t border-gray-700 pt-4">
-        <div className="flex items-center gap-2 mb-3 px-4 overflow-x-auto no-scrollbar pb-1 mask-linear-fade">
+        <div className="flex items-center gap-2 mb-3 px-4 overflow-x-auto no-scrollbar pb-1">
             {SUGGESTED_PROMPTS[language].map(prompt => (
                 <button key={prompt} onClick={() => handleSendMessage(prompt)} className="flex-shrink-0 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-full transition-colors whitespace-nowrap border border-gray-700/50">
                     {prompt}

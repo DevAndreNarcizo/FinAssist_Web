@@ -71,43 +71,83 @@ Contexto Atual:
 - Investimentos: ${JSON.stringify(investments)}
 `;
 
-            // Converter histórico do frontend para o formato do Gemini
-            const history = (chatHistory || [])
-                .filter((msg: any) => msg.id !== 'init' && !msg.id.startsWith('db-')) // Ignora msg inicial e de sistema
+            // Converter e sanitizar histórico do frontend
+            const rawHistory = (chatHistory || [])
+                .filter((msg: any) => msg.id !== 'init' && !msg.id.startsWith('db-'))
                 .map((msg: any) => ({
                     role: msg.role === 'user' ? 'user' : 'model',
                     parts: [{ text: msg.text }]
                 }));
 
+            // Garantir alternância de papéis (User -> Model -> User...)
+            const sanitizedHistory: any[] = [];
+            if (rawHistory.length > 0) {
+                let lastRole = null;
+                for (const msg of rawHistory) {
+                    if (msg.role === lastRole) {
+                        // Se o papel for igual ao anterior, concatena o texto na mensagem anterior
+                        sanitizedHistory[sanitizedHistory.length - 1].parts[0].text += `\n\n${msg.parts[0].text}`;
+                    } else {
+                        sanitizedHistory.push(msg);
+                        lastRole = msg.role;
+                    }
+                }
+            }
+            
+            // O histórico não pode terminar com 'user' se vamos mandar uma nova mensagem de 'user' (na verdade o startChat aceita, mas o sendMessage adiciona a nova user message. O importante é o histórico passado no startChat estar alternado e terminar com model ou user, desde que a próxima seja oposta. Como vamos mandar user, o histórico deve terminar com model, OU se terminar com user, o Gemini pode reclamar dependendo da versão. Mas a regra de ouro é alternância. Se o histórico termina com User, e mandamos User, dá erro. Então se o último do histórico for User, temos que remover ou fundir com o prompt atual? Não, o startChat define o PASSADO. Se o passado termina com User, o modelo deveria ter respondido. Vamos assumir que o histórico deve terminar com Model para podermos mandar User.)
+            
+            // Correção: Se a última mensagem do histórico for User, o Gemini espera que a próxima seja Model. Mas nós vamos chamar sendMessage com User.
+            // Isso significa que o histórico está "incompleto" (o modelo não respondeu a última).
+            // Nesse caso, devemos remover a última mensagem de User do histórico e adicioná-la ao início do prompt atual, ou simplesmente ignorá-la para evitar o erro.
+            // Vamos optar por concatenar ao prompt atual se a última for user.
+            
+            let finalPrompt = prompt;
+            if (sanitizedHistory.length > 0 && sanitizedHistory[sanitizedHistory.length - 1].role === 'user') {
+                const lastUserMsg = sanitizedHistory.pop();
+                finalPrompt = `${lastUserMsg.parts[0].text}\n\n${prompt}`;
+            }
+
             const chat = model.startChat({
-                history: history,
+                history: sanitizedHistory,
                 tools: tools,
             });
 
-            const result = await chat.sendMessage(`${contextMsg}\n\nUsuário: ${prompt}`);
-            const response = result.response;
-            const functionCalls = response.functionCalls();
+            try {
+                const result = await chat.sendMessage(`${contextMsg}\n\nUsuário: ${finalPrompt}`);
+                const response = result.response;
+                const functionCalls = response.functionCalls();
 
-            if (functionCalls && functionCalls.length > 0) {
-                const call = functionCalls[0];
+                if (functionCalls && functionCalls.length > 0) {
+                    const call = functionCalls[0];
+                    return {
+                        statusCode: 200,
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            type: 'functionCall',
+                            data: {
+                                name: call.name,
+                                args: call.args
+                            }
+                        })
+                    };
+                } else {
+                    return {
+                        statusCode: 200,
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            type: 'text',
+                            data: response.text()
+                        })
+                    };
+                }
+            } catch (apiError: any) {
+                console.error("Gemini API Error:", apiError);
                 return {
-                    statusCode: 200,
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        type: 'functionCall',
-                        data: {
-                            name: call.name,
-                            args: call.args
-                        }
-                    })
-                };
-            } else {
-                return {
-                    statusCode: 200,
+                    statusCode: 200, // Retorna 200 para o frontend não cair no catch genérico
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         type: 'text',
-                        data: response.text()
+                        data: `Desculpe, tive um problema técnico ao processar sua solicitação. Detalhe: ${apiError.message}`
                     })
                 };
             }

@@ -44,16 +44,18 @@ const callGeminiFunction = async (action: string, payload: any) => {
 
 interface GenerateResponseParams {
     prompt: string;
+    chatHistory: any[]; // Using any[] to avoid circular dependency issues with types, but ideally should be ChatMessage[]
     transactions: Transaction[];
     investments: Investment[];
     localApi: { [key: string]: (...args: any[]) => any };
     language: Language;
 }
 
-export const generateResponse = async ({ prompt, transactions, investments, localApi, language }: GenerateResponseParams): Promise<string> => {
+export const generateResponse = async ({ prompt, chatHistory, transactions, investments, localApi, language }: GenerateResponseParams): Promise<string> => {
     try {
         const response = await callGeminiFunction('generateResponse', {
             prompt,
+            chatHistory,
             transactions,
             investments,
             language,

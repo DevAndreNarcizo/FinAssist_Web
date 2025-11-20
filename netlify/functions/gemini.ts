@@ -61,7 +61,7 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
         const { action, payload } = body;
 
         if (action === 'generateResponse') {
-            const { prompt, transactions, investments, language } = payload;
+            const { prompt, chatHistory, transactions, investments, language } = payload;
             
             // Contexto simplificado para não estourar tokens
             const contextMsg = `
@@ -71,7 +71,16 @@ Contexto Atual:
 - Investimentos: ${JSON.stringify(investments)}
 `;
 
+            // Converter histórico do frontend para o formato do Gemini
+            const history = (chatHistory || [])
+                .filter((msg: any) => msg.id !== 'init' && !msg.id.startsWith('db-')) // Ignora msg inicial e de sistema
+                .map((msg: any) => ({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.text }]
+                }));
+
             const chat = model.startChat({
+                history: history,
                 tools: tools,
             });
 

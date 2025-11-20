@@ -43,6 +43,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     try {
         const modelResponse = await generateResponse({
             prompt: textToSend,
+            chatHistory,
             transactions,
             investments,
             localApi,
